@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script defer>
+      async function post(url, data) {
+        try {
+          const response = await fetch(url, {
+            method: "POST", // Метод запроса
+            headers: {
+              "Content-Type": "text/plain", // Указываем тип контента
+            },
+            body: data, // Отправляем текст напрямую
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const responseData = await response.text(); // Получаем ответ в формате текста
+          return responseData; // Возвращаем текстовые данные
+        } catch (error) {
+          console.error("Ошибка при отправке POST-запроса:", error);
+        }
+      }
+
+      // Пример использования
+      const url = "http://localhost:6060/?get=http://localhost:8080/";
+      const data = "Это простой текст"; // Простой текст для отправки
+
+      post(url, data).then((response) => {
+        console.log("Ответ от сервера:", response);
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Hello from server!</h1>
+  </body>
+</html>
