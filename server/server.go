@@ -15,16 +15,15 @@ func fileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := r.URL.Path[1:] // Убираем первый символ "/"
+	filePath := r.URL.Path[1:]
 	fullPath := filepath.Join(".", filePath)
 
 	// Проверяем, существует ли файл
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		http.NotFound(w, r) // Возвращаем 404, если файл не найден
+		http.NotFound(w, r)
 		return
 	}
 
-	// Устанавливаем заголовок Content-Type в зависимости от расширения файла
 	switch filepath.Ext(fullPath) {
 	case ".html":
 		w.Header().Set("Content-Type", "text/html")
@@ -37,15 +36,14 @@ func fileHandler(w http.ResponseWriter, r *http.Request) {
 	case ".png":
 		w.Header().Set("Content-Type", "image/png")
 	default:
-		w.Header().Set("Content-Type", "application/octet-stream") // Для остальных типов
+		w.Header().Set("Content-Type", "application/octet-stream")
 		fmt.Println("Ошибка при определении типа файла: " + filepath.Ext(fullPath) + " (" + fullPath + ")")
 	}
 
-	http.ServeFile(w, r, fullPath) // Отправляем файл клиенту
+	http.ServeFile(w, r, fullPath)
 }
 
 func handlePostRequest(w http.ResponseWriter, r *http.Request) {
-	// Читаем тело запроса
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Ошибка при чтении тела запроса", http.StatusBadRequest)
@@ -53,16 +51,14 @@ func handlePostRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// Обрабатываем данные (например, просто выводим их в лог)
 	log.Printf("Получен POST-запрос с данными: %s", body)
 
-	// Отправляем ответ клиенту
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Данные успешно получены"))
 }
 
 func main() {
-	http.HandleFunc("/", fileHandler) // Устанавливаем обработчик для всех запросов
+	http.HandleFunc("/", fileHandler)
 
 	log.Println("Сервер запущен на http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
